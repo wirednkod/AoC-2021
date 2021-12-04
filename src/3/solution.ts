@@ -37,16 +37,12 @@ const solution1 = (lines: string[]) => {
     e[k] = ones < zeros ? 1 : 0
   }
 
-  console.log(parser(g.join("")) * parser(e.join("")))
   return parser(g.join("")) * parser(e.join(""))
 }
 
 const solution2 = (lines: string[]) => {
   let oxygen = findOandCO(lines, true)
   let co2 = findOandCO(lines)
-
-  console.log(oxygen * co2)
-
   return oxygen * co2
 }
 
