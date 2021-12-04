@@ -1,52 +1,53 @@
-const solution1 = (lines: string[]) => {
-  const len = lines[0].length
+const parser = (a: string): number => parseInt(a, 2)
 
-  const sums = Array(len).fill(0)
-
-  lines.forEach((line) => {
-    line.split("").forEach((val, x) => {
-      sums[x] += Number(val)
-    })
+const readOnesAndZeros = (lines: string[], k: number): [number, number] => {
+  let z = 0
+  let o = 0
+  lines.forEach((l) => {
+    if (l.split("")[k] === "0") {
+      z++
+    } else {
+      o++
+    }
   })
-
-  const first = parseInt(
-    sums.map((x) => (x >= lines.length / 2 ? 1 : 0)).join(""),
-    2,
-  )
-  const second = parseInt(
-    sums.map((x) => (x >= lines.length / 2 ? 0 : 1)).join(""),
-    2,
-  )
-
-  return first * second
+  return [o, z]
 }
 
-const findNumber = (lines: Array<Array<"0" | "1">>, keepMore: boolean) => {
-  let result = lines
-  let idx = 0
-  while (result.length > 1) {
-    const zeros: Array<"0" | "1">[] = []
-    const ones: Array<"0" | "1">[] = []
-
-    result.forEach((line) => {
-      const target = line[idx] === "0" ? zeros : ones
-      target.push(line)
-    })
-
-    if (zeros.length === ones.length) {
-      result = keepMore ? ones : zeros
-    } else {
-      const [more, less] =
-        zeros.length > ones.length ? [zeros, ones] : [ones, zeros]
-      result = keepMore ? more : less
+const findOandCO = (lines: string[], oxygen = false): number => {
+  let filtered: Array<string> = lines
+  for (let k = 0; k < lines[0].length; k++) {
+    const [ones, zeros] = readOnesAndZeros(lines, k)
+    const against = oxygen ? (ones >= zeros ? 1 : 0) : ones < zeros ? 1 : 0
+    filtered = filtered
+      .map((l) => (parseInt(l.split("")[k], 0) === against ? l : ""))
+      .filter(Boolean)
+    if (filtered.length === 1) {
+      break
     }
-    idx++
+  }
+  return parser(filtered[0])
+}
+
+const solution1 = (lines: string[]) => {
+  const g: Array<Number> = []
+  const e: Array<Number> = []
+  for (let k = 0; k < lines[0].length; k++) {
+    const [ones, zeros] = readOnesAndZeros(lines, k)
+    g[k] = ones > zeros ? 1 : 0
+    e[k] = ones < zeros ? 1 : 0
   }
 
-  return parseInt(result[0] as unknown as string, 2)
+  console.log(parser(g.join("")) * parser(e.join("")))
+  return parser(g.join("")) * parser(e.join(""))
 }
 
-const solution2 = (lines: Array<Array<"0" | "1">>) =>
-  findNumber(lines, true) * findNumber(lines, false)
+const solution2 = (lines: string[]) => {
+  let oxygen = findOandCO(lines, true)
+  let co2 = findOandCO(lines)
+
+  console.log(oxygen * co2)
+
+  return oxygen * co2
+}
 
 export default [solution1, solution2]
